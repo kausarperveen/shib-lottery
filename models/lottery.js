@@ -12,7 +12,11 @@ module.exports = (sequelize) => {
     purchase_date: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.NOW
-    }
+    },
+    end_date: {
+      type: DataTypes.DATE,
+      defaultValue: Sequelize.literal('DATEADD(hour, 24, purchase_date)'),
+    },
   }, {
     tableName: 'lottery',
     timestamps: false,

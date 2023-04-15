@@ -13,7 +13,11 @@ router.get('/', function(req, res, next) {
 
 
 // Start lottery function
-router.post('/start_lottery', isAdmin, async (req, res) => {
+// In your router file:
+
+
+// Start lottery function
+router.get('/start_lottery',  async (req, res) => {
   try {
     // Set a start date for the lottery
     const startDate = new Date();
@@ -32,7 +36,7 @@ router.post('/start_lottery', isAdmin, async (req, res) => {
 });
 
 // Close lottery function
-router.post('/close_lottery', isAdmin, async (req, res) => {
+router.get('/close_lottery', async (req, res) => {
   try {
     // Set an end date for the lottery
     const endDate = new Date();
@@ -60,6 +64,7 @@ router.post('/close_lottery', isAdmin, async (req, res) => {
     return res.status(500).json({ error: 'Something went wrong while closing the lottery' });
   }
 });
+
 
 
 
