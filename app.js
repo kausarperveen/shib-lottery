@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-db.sequelize.sync().then(() => {
+ db.sequelize.sync().then(() => {
   console.log('Database synced successfully.');
 }).catch((err) => {
   console.error('Unable to sync database:', err);

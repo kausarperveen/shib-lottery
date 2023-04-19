@@ -1,5 +1,5 @@
 
-const { Sequelize, DataTypes } = require('sequelize');
+const { Sequelize, DataTypes,literal } = require('sequelize');
 const uuidv4 = require('uuid').v4;
 const User = require('./user')
 module.exports = (sequelize) => {
@@ -11,19 +11,27 @@ module.exports = (sequelize) => {
     },
     purchase_date: {
       type: DataTypes.DATE,
-      defaultValue: Sequelize.NOW
+      allowNull: false,
+      defaultValue: DataTypes.NOW, // Set the default value to the current date
     },
-    end_date: {
+    end_time: {
       type: DataTypes.DATE,
-      defaultValue: Sequelize.literal('DATEADD(hour, 24, purchase_date)'),
+      defaultValue: function() {
+        if (this.purchase_date) {
+          return new Date(this.purchase_date.getTime() + (24 * 60 * 60 * 1000));
+        } else {
+          return null;
+        }
+      }
     },
+      
   }, {
     tableName: 'lottery',
     timestamps: false,
   });
 
   Lottery.associate = (models) => {
-    Lottery.belongsTo(models.User, { foreignKey: { name: 'user_id', allowNull: false }, onDelete: 'CASCADE' });
+  Lottery.belongsTo(models.User, { foreignKey: { name: 'user_id', allowNull: false }, onDelete: 'CASCADE' });
   }
 
   console.log(Lottery === sequelize.models.Lottery); // true

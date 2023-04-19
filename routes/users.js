@@ -11,38 +11,56 @@ router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 }); 
 
-
-
 router.post('/buy_lottery', async (req, res) => {
-  const { wallet_address,lottery_numbers } = req.body;
-  let [user, created] = await User.findOrCreate({
-    where: { wallet_address },
-    defaults: {
-      wallet_address,
-      checked_status: false
+  try {
+    const { wallet_address, lottery_numbers } = req.body;
+    let [user, created] = await User.findOrCreate({
+      where: { wallet_address },
+      defaults: {
+        wallet_address,
+        checked_status: false
+      }
+    });
+    
+    if (!user) {
+      return res.status(400).send('Invalid wallet address');
     }
-  });
+    
+    // Generate a sequence of unique lottery numbers, up to a maximum of 500
+    const maxLotteryNumber = await Lottery.max('lottery_number');
+    const nextLotteryNumber = (maxLotteryNumber || 0) + 1;
+    const numLotteryNumbers = Math.min(lottery_numbers, 500);
+    if (numLotteryNumbers <= 0) {
+      return res.status(400).send('Invalid number of lottery tickets');
+    }
+    const lotteryNumbers = Array.from({ length: numLotteryNumbers }, (_, i) => {
+      const num = nextLotteryNumber + i;
+      if (num > 500) {
+        throw new Error('Cannot generate more than 500 lottery tickets');
+      }
+      return num;
+    });
+
+    // Create Lottery objects for the tickets being purchased
+    const lotteryTickets = lotteryNumbers.map(lotteryNumber => ({
+      user_id: user.user_id,
+      lottery_number: lotteryNumber,
+      purchase_date: new Date(),
+    }));
   
-  if (!user) {
-    return res.status(400).send('Invalid wallet address');
+    // Save the Lottery objects to the database
+    await Lottery.bulkCreate(lotteryTickets);
+  
+    return res.status(200).send('Lottery tickets purchased successfully');
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send('Internal server error');
   }
-  // Generate a sequence of unique lottery numbers
-  const maxLotteryNumber = await Lottery.max('lottery_number');
-  const nextLotteryNumber = (maxLotteryNumber || 0) + 1;
-  const lotteryNumbers = Array.from({ length: lottery_numbers }, (_, i) => nextLotteryNumber + i);
-
-  // Create Lottery objects for the tickets being purchased
-  const lotteryTickets = lotteryNumbers.map(lotteryNumber => ({
-    user_id: user.user_id,
-    lottery_number: lotteryNumber,
-    purchase_date: new Date(),
-  }));
-
-  // Save the Lottery objects to the database
-  await Lottery.bulkCreate(lotteryTickets);
-
-  return res.status(200).send('Lottery tickets purchased successfully');
 });
+
+
+
+
 
 
 router.get('/generate-random-winners', async (req, res) => {
@@ -155,6 +173,35 @@ function generateWinningNumbers() {
     res.status(500).json({ error: error.message });
   }
 });
+
+// POST /draw
+// This route starts a lottery draw
+router.get('/draw',async (req, res,next) => {
+  try {
+    // Get all purchased lottery tickets
+    const tickets = await Lottery.findAll({});
+
+    // Get a random winning ticket
+    const winningTicket = tickets[Math.floor(Math.random() * tickets.length)];
+
+    // Get the user who owns the winning ticket
+    const winner = await User.findOne({ where: { user_id: winningTicket.user_id } });
+
+    // Update the checked status of the winning ticket
+    await winningTicket.update({ checked_status: true });
+
+    res.status(200).json({
+      success: true,
+      message: 'Lottery draw completed successfully',
+      winning_ticket: winningTicket,
+      winner: winner
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, error: 'Something went wrong' });
+  }
+});
+
 
 
 

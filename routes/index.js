@@ -17,7 +17,7 @@ router.get('/', function(req, res, next) {
 
 
 // Start lottery function
-router.get('/start_lottery',  async (req, res) => {
+router.post('/start_lottery',  async (req, res) => {
   try {
     // Set a start date for the lottery
     const startDate = new Date();
@@ -36,7 +36,7 @@ router.get('/start_lottery',  async (req, res) => {
 });
 
 // Close lottery function
-router.get('/close_lottery', async (req, res) => {
+router.post('/close_lottery', async (req, res) => {
   try {
     // Set an end date for the lottery
     const endDate = new Date();

@@ -9,7 +9,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-// Define your models here
+ //Define your models here
 db.user = require('./user')(sequelize,Sequelize)
 db.lottery = require('./lottery')(sequelize,Sequelize)
 db.user.hasMany(db.lottery, { foreignKey: 'user_id' });
