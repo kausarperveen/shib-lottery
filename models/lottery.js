@@ -24,8 +24,23 @@ module.exports = (sequelize) => {
         }
       }
     },
-      
-  }, {
+    wallet_address: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    }, 
+    checked_status: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    user_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'user_id'
+      },
+  }, 
+},{
     tableName: 'lottery',
     timestamps: false,
   });

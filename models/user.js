@@ -1,29 +1,38 @@
 const { Sequelize, DataTypes } = require('sequelize');
 
-module.exports = (sequelize,DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     user_id: {
       type: DataTypes.UUID,
       defaultValue: Sequelize.UUIDV4,
-      primaryKey: true
+      primaryKey: true,
     },
-    wallet_address: {
+    username: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      unique: true
+      unique: true,
     },
-    checked_status: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    }
+    email: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      unique: true,
+    },
+    password: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    role: {
+      type: DataTypes.ENUM('user', 'admin'),
+      defaultValue: 'user',
+    },
   }, {
     tableName: 'users',
-    timestamps: false
+    timestamps: false,
   });
-  console.log(User === sequelize.models.User)
+
+  User.associate = (models) => {
+    User.hasMany(models.Lottery, { foreignKey: { name: 'user_id', allowNull: false }, onDelete: 'CASCADE' });
+  };
+
   return User;
-}
-
-
-
-
+};

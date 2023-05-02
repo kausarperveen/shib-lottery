@@ -14,4 +14,8 @@ db.user = require('./user')(sequelize,Sequelize)
 db.lottery = require('./lottery')(sequelize,Sequelize)
 db.user.hasMany(db.lottery, { foreignKey: 'user_id' });
 db.lottery.belongsTo(db.user, { foreignKey: 'user_id' });
+db.passwordRestToken=require('./PasswordResetToken')(sequelize,Sequelize)
+//db.passwordRestToken.hasMany(db.user, { foreignKey: 'user_id' });
+//db.user.belongsTo(db.passwordRestToken, { foreignKey: 'user_id' });
+
 module.exports = db;
