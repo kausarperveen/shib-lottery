@@ -10,7 +10,8 @@ var db = require('../models');
 var Lottery=db.lottery
 var User=db.user
 var PasswordResetToken=db.passwordRestToken
-const SECRET_KEY = 'mysecretkey';
+const SECRET_KEY = process.env.JWT_SECRET;
+
 const { isAdmin } = require('../middlewares/isAdmin');
 const{authenticateToken}=require('../middlewares/checkRegisterd')
 /* GET home page. */

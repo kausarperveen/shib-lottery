@@ -1,8 +1,19 @@
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('shib_lottery', 'root', 'your_current_password', {
-  host: 'localhost',
-  dialect: 'mysql'
-});
+const dotenv = require('dotenv');
+dotenv.config();
+
+let sequelize;
+
+if (process.env.NODE_ENV === 'production') {
+  sequelize = new Sequelize(process.env.CLEARDB_DATABASE_URL, {
+    dialect: 'mysql'
+  });
+} else {
+  sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+    host: process.env.DB_HOST,
+    dialect: 'mysql'
+  });
+}
 
 const db = {};
 
