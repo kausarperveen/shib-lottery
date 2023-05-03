@@ -1,8 +1,10 @@
 const Sequelize = require('sequelize');
 const dotenv = require('dotenv');
 dotenv.config();
-
-let sequelize;
+const sequelize = new Sequelize(process.env.CLEARDB_DATABASE_URL, {
+  dialect: 'mysql'
+});
+/*let sequelize;
 
 if (process.env.NODE_ENV === 'production') {
   sequelize = new Sequelize(process.env.CLEARDB_DATABASE_URL, {
@@ -13,7 +15,7 @@ if (process.env.NODE_ENV === 'production') {
     host: process.env.DB_HOST,
     dialect: 'mysql'
   });
-}
+}*/
 
 const db = {};
 
