@@ -2,8 +2,15 @@ const Sequelize = require('sequelize');
 const dotenv = require('dotenv');
 dotenv.config();
 const sequelize = new Sequelize(process.env.CLEARDB_DATABASE_URL, {
-  dialect: 'mysql'
+  dialect: 'mysql',
+  dialectOptions: {
+    ssl: {
+      rejectUnauthorized: false
+    }
+  }
 });
+
+
 /*let sequelize;
 
 if (process.env.NODE_ENV === 'production') {
