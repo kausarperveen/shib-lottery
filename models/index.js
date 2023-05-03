@@ -1,8 +1,20 @@
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('shib_lottery', 'root', 'your_current_password', {
-  host: 'localhost',
-  dialect: 'mysql'
-});
+let sequelize;
+
+if (process.env.NODE_ENV === 'production') {
+  // Use the CLEARDB_DATABASE_URL environment variable provided by Heroku
+  sequelize = new Sequelize(process.env.CLEARDB_DATABASE_URL, {
+    dialect: 'mysql'
+  });
+} else {
+  // Use the local MySQL database for development
+  sequelize = new Sequelize('shib_lottery', 'root', 'your_current_password', {
+    host: 'localhost',
+    dialect: 'mysql'
+  });
+}
+
+module.exports = sequelize;
 
 const db = {};
 
